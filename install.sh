@@ -29,19 +29,20 @@ if ! grep -q "plugins=.*$PLUGIN_NAME" "$HOME/.zshrc"; then
     fi
 fi
 
-# Interactive configuration
+# Interactive configuration - redirect from /dev/tty for piped scripts
 echo "=== Configuration ==="
 echo "Enter configuration values (press Enter for defaults):"
 
-read -p "OpenAI API Key: " API_KEY
-read -p "OpenAI API URL (default: https://api.openai.com/v1): " API_URL
-read -p "Model (default: gpt-3.5-turbo): " MODEL
-read -p "Max tokens (default: 1000): " MAX_TOKENS
+read -p "OpenAI API Key: " API_KEY </dev/tty
+read -p "OpenAI API URL (default: https://api.openai.com/v1): " API_URL </dev/tty
+read -p "Model (default: gpt-3.5-turbo): " MODEL </dev/tty
+read -p "Max tokens (default: 1000): " MAX_TOKENS </dev/tty
 # read -p "Temperature (default: 0.3): " TEMPERATURE
 
 # Set defaults
+API_URL=${API_URL:-https://api.openai.com/v1}
 MODEL=${MODEL:-gpt-3.5-turbo}
-MAX_TOKENS=${MAX_TOKENS:-100}
+MAX_TOKENS=${MAX_TOKENS:-1000}
 # TEMPERATURE=${TEMPERATURE:-0.3}
 
 # Create .env file
