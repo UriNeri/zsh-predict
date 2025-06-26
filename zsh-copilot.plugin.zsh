@@ -1,1 +1,0 @@
-source ${0:A:h}/src/zsh-predict.zsh

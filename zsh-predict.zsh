@@ -1,21 +1,20 @@
-# Forked from https://github.com/Gamma-Software/zsh-predict
+# Forked from https://github.com/Gamma-Software/zsh-copilot
 
 SCRIPT_PATH=${(%):-%x}
-ZSH_COPILOT_PREFIX=${SCRIPT_PATH:A:h}
-ZSH_COPILOT_PLUGIN_DIR=${ZSH_COPILOT_PREFIX}/../
+ZSH_PREDICT_PREFIX=${SCRIPT_PATH:A:h}
 
 # Source env
-source "${ZSH_COPILOT_PLUGIN_DIR}/.env"
+source "${ZSH_PREDICT_PREFIX}/.env"
 
 # Global variable to store the current suggestion
-ZSH_COPILOT_SUGGESTION=""
+ZSH_PREDICT_SUGGESTION=""
 
 # =============================================================================
 # API VALIDATION
 # =============================================================================
 
 function _zsh_validate_ping_api() {
-    local response_code=$(curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $ZSH_COPILOT_API_KEY" -d '{"messages":[{"role":"user","content":"test"}],"model":"'$ZSH_COPILOT_MODEL'"}' $ZSH_COPILOT_API_URL -s -o /dev/null -w "%{http_code}")
+    local response_code=$(curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $ZSH_PREDICT_API_KEY" -d '{"messages":[{"role":"user","content":"test"}],"model":"'$ZSH_PREDICT_MODEL'"}' $ZSH_PREDICT_API_URL -s -o /dev/null -w "%{http_code}")
     if [[ $response_code -eq 401 ]]; then
         echo "\033[0;31mError: Invalid API key\033[0m"
         return 1
@@ -65,9 +64,9 @@ Partial command: ${current_input}"
         ]')
 
     # Set default values if environment variables are empty
-    local model=${ZSH_COPILOT_MODEL:-"gpt-4o-mini"}
-    local tokens=${ZSH_COPILOT_TOKENS:-"1024"}
-    local api_url=${ZSH_COPILOT_API_URL:-"https://api.openai.com/v1/chat/completions"}
+    local model=${ZSH_PREDICT_MODEL:-"gpt-4o-mini"}
+    local tokens=${ZSH_PREDICT_TOKENS:-"1024"}
+    local api_url=${ZSH_PREDICT_API_URL:-"https://api.openai.com/v1/chat/completions"}
 
     local json_data=$(jq -n \
         --argjson messages "$messages" \
@@ -82,7 +81,7 @@ Partial command: ${current_input}"
     # Make API call and extract response
     local response=$(curl -s -X POST "$api_url" \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $ZSH_COPILOT_API_KEY" \
+        -H "Authorization: Bearer $ZSH_PREDICT_API_KEY" \
         -d "$json_data")
 
     if echo -E "$response" | jq -e '.error' > /dev/null; then
@@ -104,12 +103,12 @@ function predict-widget() {
     
     if [[ $? -eq 0 && -n "$result" ]]; then
         # Store the suggestion globally
-        ZSH_COPILOT_SUGGESTION="$result"
+        ZSH_PREDICT_SUGGESTION="$result"
         
         # Display colored suggestion using printf and cursor positioning
         printf "\n💡 \e[36mSuggestion:\e[0m \e[92m%s\e[0m \e[90m(Press Tab to accept, Esc to dismiss)\e[0m" "$result"
     else
-        ZSH_COPILOT_SUGGESTION=""
+        ZSH_PREDICT_SUGGESTION=""
         printf "\n❌ \e[31mNo suggestion available\e[0m"
     fi
 
@@ -118,17 +117,17 @@ function predict-widget() {
 }
 
 function accept-suggestion-widget() {
-    if [[ -n "$ZSH_COPILOT_SUGGESTION" ]]; then
+    if [[ -n "$ZSH_PREDICT_SUGGESTION" ]]; then
         # Clear the suggestion display
         printf "\033[2K\r"  # Clear entire line and return to beginning
         printf "\033[A\033[2K"  # Move up one line and clear it
         
         # Replace the current buffer with the suggestion
-        BUFFER="$ZSH_COPILOT_SUGGESTION"
+        BUFFER="$ZSH_PREDICT_SUGGESTION"
         # Move cursor to the end
         CURSOR=${#BUFFER}
         # Clear the suggestion
-        ZSH_COPILOT_SUGGESTION=""
+        ZSH_PREDICT_SUGGESTION=""
         
         # Force a complete redraw of the command line
         zle reset-prompt
@@ -141,7 +140,7 @@ function accept-suggestion-widget() {
 
 function dismiss-suggestion-widget() {
     # Clear the suggestion and message
-    ZSH_COPILOT_SUGGESTION=""
+    ZSH_PREDICT_SUGGESTION=""
     zle -M ""
 }
 

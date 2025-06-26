@@ -23,7 +23,7 @@ fi
 # Add plugin to .zshrc if not already there
 if ! grep -q "plugins=.*$PLUGIN_NAME" "$HOME/.zshrc"; then
     if grep -q "^plugins=(" "$HOME/.zshrc"; then
-        sed -i.bak "s/plugins=(/plugins=(\n $PLUGIN_NAME /" "$HOME/.zshrc"
+        sed -i.bak "s/^plugins=(/plugins=(\n $PLUGIN_NAME /" "$HOME/.zshrc"
     else
         echo "plugins=($PLUGIN_NAME)" >> "$HOME/.zshrc"
     fi
