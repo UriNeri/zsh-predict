@@ -23,7 +23,7 @@ ZSH_DISABLE_COMPFIX=true
 
 
 ## Usage
-During your zsh session, invoke the prediction with the keyboard shortcut (default: `ctrl+space `).  
+During your zsh session, invoke the prediction with the keyboard shortcut (default: `ctrl+t`).  
 Accept the prediction with `enter`, or reject it with `exit` or `ctrl+c`.
 
 

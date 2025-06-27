@@ -1,7 +1,7 @@
 # Forked from https://github.com/Gamma-Software/zsh-copilot
 
-SCRIPT_PATH=${(%):-%x}
-ZSH_PREDICT_PREFIX=${SCRIPT_PATH:A:h}
+ZSH_PREDICT_PREFIX="$HOME/.oh-my-zsh/plugins/zsh-predict/"
+SCRIPT_PATH="${ZSH_PREDICT_PREFIX}/zsh-predict.zsh"
 
 # Source env
 source "${ZSH_PREDICT_PREFIX}/.env"
@@ -46,7 +46,8 @@ function predict() {
     local history_data=$(tail -n $history_size ~/.zsh_history) # TODO: can use histdb instead
     
     # Get the current command line content
-    local current_input=$BUFFER
+    # Use parameter if provided, otherwise use BUFFER (for ZLE widget context)
+    local current_input=${1:-$BUFFER}
 
     # Construct the user content
     local user_content="Current directory: ${current_dir}
@@ -154,6 +155,6 @@ zle -N accept-suggestion-widget
 zle -N dismiss-suggestion-widget
 
 # Bind the widgets
-bindkey "^@" predict-widget           # Ctrl+Space to get suggestion
+bindkey "^T" predict-widget           # Ctrl+G to get suggestion
 bindkey "^I" accept-suggestion-widget # Tab to accept suggestion
 bindkey "^[" dismiss-suggestion-widget # Esc to dismiss suggestion
